@@ -10,15 +10,66 @@
 // Create new YUI instance, and populate it with the required modules
 YUI().use('io', function(Y) {
 //Begin Closure
-var socket = new io.Socket(null, {port: 8080});
+
+//Store the player ID.
+var iAm = false,
+    geoloc = navigator.geolocation;
+
+var socket = new io.Socket(null, {port: 8080}),
+    output = Y.one('#output'),
+    stubs = {
+        player1 : {
+            coords : {
+                lat:  33.7489021827994,
+                lon:  -84.38930690288544
+            }
+        },
+        player2 : {
+            coords : {
+                lat:  33.74937052432715, 
+                lon:  -84.38727378845215
+            }
+        }
+    };
+
+socket.on('message', function(obj){
+
+    if(!Y.Lang.isUndefined(obj.msg)) {
+        output.append(obj.msg); 
+    }
+
+    //On first connection, store the player id, 
+    if(!Y.Lang.isUndefined(obj.playerId)) {
+        iAm = obj.playerId;
+        
+        //And set up a geoloc timer to get the coords
+        navigator.geolocation.watchPosition(
+        function(position) { //success
+            console.log(position);
+        }, 
+        function(position) { //error
+            console.log(position);            
+        });
 
 
+    }
+
+    console.log(obj);
+});
+
+//Join the game. 
 var connect = function() {
     console.log('connecting to game...');
     socket.connect();
 };
 
+// Send the players coords to the server. 
+var sendCoords = function() {
 
+    //Look these up with geo
+    var latlon = stubs['player'+playerId].coords;
+    
+};
 
 Y.on("domready", connect);
 
@@ -45,20 +96,20 @@ Y.on("domready", connect);
         return msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
       };
       
-      var socket = new io.Socket(null, {port: 8080});
-      socket.connect();
-      socket.on('message', function(obj){
-        if ('buffer' in obj){
-          document.getElementById('form').style.display='block';
-          document.getElementById('chat').innerHTML = '';
-          
-          for (var i in obj.buffer) message(obj.buffer[i]);
-        } else message(obj);
-      });
+      // var socket = new io.Socket(null, {port: 8080});
+      // socket.connect();
+      // socket.on('message', function(obj){
+      //   if ('buffer' in obj){
+      //     // document.getElementById('form').style.display='block';
+      //     document.getElementById('chat').innerHTML = '';
+      //     
+      //     for (var i in obj.buffer) message(obj.buffer[i]);
+      //   } else message(obj);
+      // });
     </script>
     
     <h1>Sample chat client</h1>
     <div id="chat"><p>Connecting...</p></div>
-    
+    <div id="output"></div>
   </body>
 </html>

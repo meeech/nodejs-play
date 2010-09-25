@@ -41,10 +41,38 @@ server.listen(8080);
 // simplest chat application evar
 var io = io.listen(server),
 		buffer = [];
+
+var games = {
+        a : {
+            player1: false,
+            player2: false
+        }
+    };
+
+//Join a player to a game.
+//Right now, only have one game: a, so if player 1 spot is taken, 
+//we pop em into player2
+var joinPlayer = function(client) {
+    
+    var playerId = 2;
+
+    if( false == games.a.player1) {
+        playerId = 1
+    } 
+
+    games.a['player'+playerId] = client;
+    client.send({
+        "msg": "You are player"+playerId,
+        "playerId": playerId
+    });
+};
 		
 io.on('connection', function(client){
-	client.send({ buffer: buffer });
-	client.broadcast({ announcement: client.sessionId + ' connected' });
+    
+    joinPlayer(client);
+    
+    // client.send({ buffer: buffer });
+    // client.broadcast({ announcement: client.sessionId + ' connected' });
 
 	client.on('message', function(message){
 		var msg = { message: [client.sessionId, message] };
