@@ -16,6 +16,7 @@ server = http.createServer(function(req, res){
 			
 		case '/json.js':
 		case '/chat.html':
+		case '/client.html':
 			fs.readFile(__dirname + path, function(err, data){
 				if (err) return send404(res);
                 res.writeHead(200, {'Content-Type': path == 'json.js' ? 'text/javascript' : 'text/html'});
