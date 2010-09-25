@@ -3,6 +3,7 @@ var http = require('http'),
 		fs = require('fs'),
 		io = require('../node-libs/socket.io-node'),
 		sys = require('sys'),
+		geo = require('./lib/geo/lib/geoUtils.js'),
 		
 server = http.createServer(function(req, res){
 	// your normal server code
