@@ -71,6 +71,27 @@ var joinPlayer = function(client) {
         "msg": "You are player"+playerId,
         "playerId": playerId
     });
+    
+    //We can infer both positions are filled, so start game
+    if(2 == playerId) {
+        gameBegin();
+    }
+};
+
+var gameBegin = function() {
+    setInterval(function() {
+        //very functional
+        var player1 = games.a.player1,
+            player2 = games.a.player2;
+
+        if(player1.currentPosition && player2.currentPosition) {
+            console.log("calculate distance");
+        } else {
+            console.log('missing coords');
+        }
+
+    }, 2000);
+
 };
 		
 io.on('connection', function(client){
@@ -83,12 +104,14 @@ io.on('connection', function(client){
 	client.on('message', function(message){
 
         var msg = JSON.parse(message);
-        
+        console.log(message);
         if(msg.coords) {
             sys.puts(client.sessionId);
             players[client.sessionId].currentPosition = msg.coords;
         };
 	});
+
+
 
 	client.on('disconnect', function(){
 		client.broadcast({ announcement: client.sessionId + ' disconnected' });
