@@ -49,6 +49,9 @@ var games = {
         }
     };
 
+//Track all players / sessionId
+var players = {};
+
 //Join a player to a game.
 //Right now, only have one game: a, so if player 1 spot is taken, 
 //we pop em into player2
@@ -61,6 +64,9 @@ var joinPlayer = function(client) {
     }
 
     games.a['player'+playerId] = client;
+
+    //Link sessionId for easy lookup
+    players[client.sessionId] = games.a["player"+playerId];
     client.send({
         "msg": "You are player"+playerId,
         "playerId": playerId
@@ -78,16 +84,10 @@ io.on('connection', function(client){
 
         var msg = JSON.parse(message);
         
-        // var currentPostion = message.coords || false;
-sys.puts(msg.coords.latitude);
-        // if(currentPostion) {         
-        //             sys.puts(message.coords.latitude);
-        // }
-	    
-        // var msg = { message: [client.sessionId, message] };
-        // buffer.push(msg);
-        // if (buffer.length > 15) buffer.shift();
-        // client.broadcast(msg);
+        if(msg.coords) {
+            sys.puts(client.sessionId);
+            players[client.sessionId].currentPosition = msg.coords;
+        };
 	});
 
 	client.on('disconnect', function(){
