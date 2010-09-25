@@ -57,8 +57,8 @@ var joinPlayer = function(client) {
     var playerId = 2;
 
     if( false == games.a.player1) {
-        playerId = 1
-    } 
+        playerId = 1;
+    }
 
     games.a['player'+playerId] = client;
     client.send({
@@ -75,10 +75,19 @@ io.on('connection', function(client){
     // client.broadcast({ announcement: client.sessionId + ' connected' });
 
 	client.on('message', function(message){
-		var msg = { message: [client.sessionId, message] };
-		buffer.push(msg);
-		if (buffer.length > 15) buffer.shift();
-		client.broadcast(msg);
+
+        var msg = JSON.parse(message);
+        
+        // var currentPostion = message.coords || false;
+sys.puts(msg.coords.latitude);
+        // if(currentPostion) {         
+        //             sys.puts(message.coords.latitude);
+        // }
+	    
+        // var msg = { message: [client.sessionId, message] };
+        // buffer.push(msg);
+        // if (buffer.length > 15) buffer.shift();
+        // client.broadcast(msg);
 	});
 
 	client.on('disconnect', function(){

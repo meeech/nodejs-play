@@ -8,7 +8,7 @@
     <script type="text/javascript" src="http://yui.yahooapis.com/3.2.0/build/simpleyui/simpleyui-min.js"></script>
     <script>
 // Create new YUI instance, and populate it with the required modules
-YUI().use('io', function(Y) {
+YUI().use('node','json-stringify', function(Y) {
 //Begin Closure
 
 //Store the player ID.
@@ -43,19 +43,25 @@ socket.on('message', function(obj){
         iAm = obj.playerId;
         
         //And set up a geoloc timer to get the coords
-        navigator.geolocation.watchPosition(
-        function(position) { //success
-            console.log(position);
-        }, 
-        function(position) { //error
-            console.log(position);            
+        navigator.geolocation.watchPosition(psuccess, perror,
+        {
+            enableHighAccuracy: true,
+            maximumAge: 1000
+            // timeout: 2000
         });
-
-
     }
 
     console.log(obj);
 });
+
+var psuccess = function(position) {
+    // console.log(position);
+    console.log(position);
+    sendCoords(Y.JSON.stringify(position));
+};
+var perror = function(position) {
+    // console.log('error');
+};
 
 //Join the game. 
 var connect = function() {
@@ -64,11 +70,9 @@ var connect = function() {
 };
 
 // Send the players coords to the server. 
-var sendCoords = function() {
-
+var sendCoords = function(coords) {
     //Look these up with geo
-    var latlon = stubs['player'+playerId].coords;
-    
+    socket.send(coords);
 };
 
 Y.on("domready", connect);
